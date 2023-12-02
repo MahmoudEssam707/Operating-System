@@ -108,18 +108,25 @@ class MLQScheduler:
 
         MLQScheduler.print_output(processes, output_text)
 
+
     @staticmethod
     def print_output(processes, output_text):
         total_waiting = sum(p.waiting for p in processes)
         average_waiting = total_waiting / len(processes)
-        data = {
-            "Process": [p.name for p in processes],
-            "Turnaround Time": [p.turnaround for p in processes],
-            "Waiting Time": [p.waiting for p in processes],
-        }
-        df = pd.DataFrame(data)
+        total_turnaround = sum(p.turnaround for p in processes)
+        average_turnaround = total_turnaround / len(processes)
+
+        output_text.insert(tk.END, "\nProcess\tTurnaround Time\tWaiting Time\n")
+        for p in processes:
+            output_text.insert(
+                tk.END, "{}\t\t{}\t\t\t{}\n".format(p.name, p.turnaround, p.waiting)
+            )
+
         output_text.insert(
-            tk.END, "Average Waiting Time: {:.4f}\n".format(average_waiting)
+            tk.END, "\nAverage Waiting Time: {:.4f}\n".format(average_waiting)
+        )
+        output_text.insert(
+            tk.END, "Average Turnaround Time: {:.4f}\n".format(average_turnaround)
         )
 
 
@@ -172,7 +179,6 @@ arrival_entry.grid(row=1, column=1)
 burst_entry = Entry(root)
 burst_entry.grid(row=2, column=1)
 priority_entry = Entry(root)
-
 priority_entry.grid(row=3, column=1)
 
 # Buttons
