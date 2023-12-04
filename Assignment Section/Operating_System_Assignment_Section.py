@@ -1,6 +1,7 @@
 import pandas as pd
 import tkinter as tk
 from tkinter import Label, Entry, Button, Text
+import matplotlib.pyplot as plt
 
 
 class Process:
@@ -15,14 +16,6 @@ class Process:
         self.start = -1
         self.finish = 0
         self.q = 0
-
-    def execute(self):
-        raise NotImplementedError("Subclasses must implement the execute method.")
-
-
-class MLQProcess(Process):
-    def __init__(self, name, arrival, burst, priority):
-        super().__init__(name, arrival, burst, priority)
 
     def execute(self, output_text):
         output_text.insert(
@@ -41,6 +34,7 @@ class MLQScheduler:
         low_queue = []
         time = 0
         current = None
+
         while True:
             for p in processes:
                 if p.arrival == time:
@@ -107,7 +101,40 @@ class MLQScheduler:
             time += 1
 
         MLQScheduler.print_output(processes, output_text)
+        MLQScheduler.draw_gantt_chart(processes)
 
+    @staticmethod
+    def draw_gantt_chart(processes):
+        fig, ax = plt.subplots(figsize=(8, 4))
+        gantt_processes = [p.name for p in processes]
+        gantt_start_times = [p.start for p in processes]
+        gantt_durations = [p.burst for p in processes]
+
+        for i, process in enumerate(gantt_processes):
+            ax.barh(
+                0,
+                width=gantt_durations[i],
+                left=gantt_start_times[i],
+                label=f"{process}",
+                color=f"C{i}",
+            )
+            ax.text(
+                gantt_start_times[i] + gantt_durations[i] / 2,
+                0,
+                process,
+                ha="center",
+                va="center",
+                color="white",
+            )
+
+        ax.set_xlabel("Time")
+        ax.set_yticks([0])
+        ax.set_yticklabels(["Combined Queues"])
+        ax.set_title("Combined Queues Gantt Chart")
+        ax.legend()
+
+        plt.tight_layout()
+        plt.show()
 
     @staticmethod
     def print_output(processes, output_text):
@@ -136,7 +163,7 @@ def get_process_input():
     arrival = int(arrival_entry.get())
     burst = int(burst_entry.get())
     priority = int(priority_entry.get())
-    return MLQProcess(name, arrival, burst, priority)
+    return Process(name, arrival, burst, priority)
 
 
 def on_add_process():
