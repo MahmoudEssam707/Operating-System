@@ -129,8 +129,8 @@ class MLQScheduler:
 
         ax.set_xlabel("Time")
         ax.set_yticks([0])
-        ax.set_yticklabels(["Combined Queues"])
-        ax.set_title("Combined Queues Gantt Chart")
+        ax.set_yticklabels(["Full Kernal"])
+        ax.set_title("Full kernal based on Gnatt chart using Matplotlib")
         ax.legend()
 
         plt.tight_layout()
